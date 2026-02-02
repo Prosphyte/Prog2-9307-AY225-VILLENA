@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Class Records</title>
+<style>
+    table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 6px;
+    }
+    table {
+    width: 100%;
+    margin-bottom: 20px;
+    }
+    input {
+    margin: 5px;
+    }
+</style>
+</head>
+<body>
+<h1>Class Records</h1>
+
+<!-- Table -->
+<table id="recordsTable">
+    <thead>
+    <tr>
+        <th>StudentID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>LAB WORK 1</th>
+        <th>LAB WORK 2</th>
+        <th>LAB WORK 3</th>
+        <th>PRELIM EXAM</th>
+        <th>ATTENDANCE GRADE</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<!-- Input Form -->
+<form id="recordForm">
+    <input type="text" id="studentId" placeholder="StudentID" required>
+    <input type="text" id="firstName" placeholder="First Name" required>
+    <input type="text" id="lastName" placeholder="Last Name" required>
+    <input type="number" id="lab1" placeholder="Lab Work 1" required>
+    <input type="number" id="lab2" placeholder="Lab Work 2" required>
+    <input type="number" id="lab3" placeholder="Lab Work 3" required>
+    <input type="number" id="prelim" placeholder="Prelim Exam" required>
+    <input type="number" id="attendance" placeholder="Attendance Grade" required>
+    <button type="submit">Add Record</button>
+</form>
+
+<footer>
+    Villena, John Kenneth M. - 23-0380-161
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
