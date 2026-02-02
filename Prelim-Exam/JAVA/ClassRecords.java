@@ -139,7 +139,7 @@ public class ClassRecords extends JFrame {
     }
 
     private void loadCSV() {
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\Prelim-Exam\\JAVA\\MOCK_DATA.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("D:\\Prelim-Exam\\Prelim-Exam\\JAVA\\MOCK_DATA.csv"))) {
             String line;
             boolean firstLine = true;
             while ((line = br.readLine()) != null) {
