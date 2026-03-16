@@ -6,7 +6,8 @@
     // Ensure the Java extension includes the source folder in the project
     "java.project.sourcePaths": [
         "Prog2-9307-AY225-FABREGAS/Midterm-Lab-3",
-        "Midterm worklabs/Midterm-Lab-3"
+        "Midterm worklabs/Midterm-Lab-3",
+        "New folder/Midterm-Lab-3"
     ],
     // Use bin as the compilation output folder so "Run Java" finds the class
     "java.project.outputPath": "bin"
