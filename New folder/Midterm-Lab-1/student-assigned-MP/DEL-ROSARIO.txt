@@ -1,0 +1,9 @@
+Top 10 Customers Report
+Scenario:
+Marketing needs top revenue contributors.
+
+Requirements:
+Aggregate sales per customer
+Sort descending
+Display top 10 customers
+Include total amount per customer

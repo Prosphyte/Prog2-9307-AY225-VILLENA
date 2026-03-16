@@ -1,0 +1,9 @@
+Sales Trend Moving Average
+
+Scenario:
+Apply simple analytics smoothing technique.
+
+Requirements:
+Sort dataset by date
+Compute 3-day moving average (or 3-record moving average)
+Display original sale + moving average

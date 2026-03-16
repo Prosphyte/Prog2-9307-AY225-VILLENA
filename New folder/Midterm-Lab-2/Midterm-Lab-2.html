@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Programming Assignment — Matrix Determinant Solver | UPHSD Molino</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    /* ═══════════════════════════════════════════════
+       DESIGN SYSTEM — Warm Academic / Technical Manual
+    ═══════════════════════════════════════════════ */
+    :root {
+      --ink:      #0f1923;
+      --ink2:     #1e2d3d;
+      --page:     #faf8f4;
+      --paper:    #ffffff;
+      --rule:     #ddd8cf;
+      --rule2:    #ece8e1;
+      --gold:     #c8860a;
+      --gold-lt:  #f0a020;
+      --gold-bg:  rgba(200,134,10,.08);
+      --red:      #c0392b;
+      --teal:     #0d7377;
+      --teal-lt:  #14a085;
+      --teal-bg:  rgba(13,115,119,.07);
+      --blue:     #1a5276;
+      --blue-bg:  rgba(26,82,118,.07);
+      --code-bg:  #0f1923;
+      --code-text:#e8dcc8;
+      --code-key: #f0a020;
+      --code-str: #6dbf8b;
+      --code-cmt: #7f9a6e;
+      --code-num: #e07b54;
+      --code-fn:  #79c0ff;
+      --radius:   8px;
+      --shadow:   0 2px 16px rgba(15,25,35,.10);
+    }
+
+    /* ── RESET ── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      background:var(--page);
+      color:var(--ink);
+      font-family:'Crimson Pro',Georgia,serif;
+      font-size:16px;
+      line-height:1.75;
+    }
+
+    /* ── HEADER ── */
+    header{
+      background:var(--ink2);
+      color:#fff;
+      padding:0;
+      position:relative;
+      overflow:hidden;
+      border-bottom:3px solid var(--gold);
+    }
+    .header-inner{
+      max-width:1140px;
+      margin:0 auto;
+      padding:36px 32px 28px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:20px;
+      align-items:center;
+    }
+    /* subtle dot-grid pattern on header */
+    header::after{
+      content:'';
+      position:absolute;inset:0;
+      background-image:radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size:28px 28px;
+      pointer-events:none;
+    }
+    .school-line{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;
+      letter-spacing:2.5px;
+      text-transform:uppercase;
+      color:var(--gold-lt);
+      margin-bottom:10px;
+    }
+    header h1{
+      font-family:'Syne',sans-serif;
+      font-size:clamp(22px,4vw,38px);
+      font-weight:800;
+      line-height:1.1;
+      color:#fff;
+    }
+    header h1 em{color:var(--gold-lt);font-style:normal}
+    .header-meta{
+      margin-top:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 20px;
+    }
+    .meta-chip{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:.8px;
+      padding:4px 12px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.2);
+      color:rgba(255,255,255,.8);
+      background:rgba(255,255,255,.05);
+    }
+    .meta-chip.gold{border-color:var(--gold);color:var(--gold-lt)}
+    .header-badge{
+      text-align:right;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;
+      color:rgba(255,255,255,.5);
+      line-height:1.6;
+      position:relative;
+      z-index:1;
+    }
+    .badge-box{
+      display:inline-block;
+      border:2px solid var(--gold);
+      border-radius:6px;
+      padding:10px 18px;
+      margin-top:8px;
+    }
+    .badge-box .pts{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--gold-lt)}
+    .badge-box .pts-label{font-size:10px;color:rgba(255,255,255,.6);display:block}
+
+    /* ── STICKY NAV ── */
+    nav.tabs{
+      background:var(--paper);
+      border-bottom:2px solid var(--rule);
+      position:sticky;
+      top:0;
+      z-index:200;
+      box-shadow:0 2px 12px rgba(15,25,35,.08);
+    }
+    .tabs-inner{
+      max-width:1140px;
+      margin:0 auto;
+      padding:0 24px;
+      display:flex;
+      gap:0;
+      overflow-x:auto;
+    }
+    nav.tabs a{
+      display:inline-block;
+      padding:14px 18px;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11.5px;
+      font-weight:600;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      text-decoration:none;
+      color:var(--ink2);
+      border-bottom:3px solid transparent;
+      white-space:nowrap;
+      transition:color .18s,border-color .18s;
+      margin-bottom:-2px;
+    }
+    nav.tabs a:hover{color:var(--gold);border-color:var(--gold)}
+    nav.tabs a.teal:hover{color:var(--teal);border-color:var(--teal)}
+    nav.tabs a.red:hover{color:var(--red);border-color:var(--red)}
+
+    /* ── MAIN LAYOUT ── */
+    main{max-width:1140px;margin:0 auto;padding:44px 24px 80px}
+
+    /* ── SECTION TITLES ── */
+    .sec{margin-bottom:56px}
+    .sec-head{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+      margin-bottom:24px;
+      padding-bottom:16px;
+      border-bottom:2px solid var(--rule);
+    }
+    .sec-num{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:12px;
+      font-weight:600;
+      color:var(--gold);
+      letter-spacing:1px;
+      padding:4px 10px;
+      border:1px solid var(--gold);
+      border-radius:4px;
+      white-space:nowrap;
+      margin-top:4px;
+      background:var(--gold-bg);
+    }
+    .sec-num.tl{color:var(--teal);border-color:var(--teal);background:var(--teal-bg)}
+    .sec-num.bl{color:var(--blue);border-color:var(--blue);background:var(--blue-bg)}
+    .sec-num.rd{color:var(--red);border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.07)}
+    .sec-title{
+      font-family:'Syne',sans-serif;
+      font-size:clamp(18px,3vw,26px);
+      font-weight:800;
+      color:var(--ink);
+      line-height:1.2;
+    }
+    .sec-title span{color:var(--gold)}
+    .sec-title.tl span{color:var(--teal)}
+    .sec-desc{font-size:15px;color:#555;margin-top:4px;font-style:italic}
+
+    /* ── CALLOUT BOXES ── */
+    .callout{
+      border-left:4px solid var(--gold);
+      background:var(--gold-bg);
+      border-radius:0 var(--radius) var(--radius) 0;
+      padding:16px 20px;
+      margin:20px 0;
+    }
+    .callout.teal{border-color:var(--teal);background:var(--teal-bg)}
+    .callout.red{border-color:var(--red);background:rgba(192,57,43,.06)}
+    .callout.blue{border-color:var(--blue);background:var(--blue-bg)}
+    .callout-title{
+      font-family:'Syne',sans-serif;
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:1.5px;
+      text-transform:uppercase;
+      margin-bottom:6px;
+      color:var(--gold);
+    }
+    .callout.teal .callout-title{color:var(--teal)}
+    .callout.red   .callout-title{color:var(--red)}
+    .callout.blue  .callout-title{color:var(--blue)}
+    .callout p,.callout li{font-size:14.5px;color:var(--ink2)}
+    .callout ul,.callout ol{padding-left:20px}
+    .callout li{margin-bottom:4px}
+
+    /* ── REQUIREMENT CARDS ── */
+    .req-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:24px 0}
+    .req-card{
+      background:var(--paper);
+      border:1px solid var(--rule);
+      border-radius:var(--radius);
+      padding:18px 20px;
+      box-shadow:var(--shadow);
+      transition:border-color .2s,transform .15s;
+    }
+    .req-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+    .req-card .rnum{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;
+      font-weight:600;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      color:var(--gold);
+      margin-bottom:8px;
+    }
+    .req-card h4{
+      font-family:'Syne',sans-serif;
+      font-size:14.5px;
+      font-weight:700;
+      color:var(--ink);
+      margin-bottom:6px;
+    }
+    .req-card p{font-size:13.5px;color:#555;line-height:1.6}
+
+    /* ── STEP LIST ── */
+    ol.steps{
+      padding:0;
+      list-style:none;
+      counter-reset:step-counter;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin:20px 0;
+      width:100%;
+    }
+    ol.steps li{
+      display:flex;
+      flex-direction:row;
+      align-items:flex-start;
+      gap:0;
+      background:var(--paper);
+      border:1px solid var(--rule);
+      border-left:4px solid var(--gold);
+      border-radius:0 var(--radius) var(--radius) 0;
+      overflow:hidden;
+      width:100%;
+    }
+    ol.steps li::before{
+      counter-increment:step-counter;
+      content:counter(step-counter,'decimal-leading-zero');
+      font-family:'IBM Plex Mono',monospace;
+      font-size:17px;
+      font-weight:700;
+      color:var(--gold);
+      background:var(--gold-bg);
+      min-width:56px;
+      width:56px;
+      padding:16px 0;
+      text-align:center;
+      flex-shrink:0;
+      align-self:stretch;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-top:17px;
+      border-right:1px solid var(--rule2);
+    }
+    ol.steps li .step-body{
+      font-size:14.5px;
+      color:var(--ink2);
+      line-height:1.68;
+      padding:14px 20px;
+      flex:1;
+      min-width:0;
+    }
+    ol.steps li .step-body strong{color:var(--ink);font-family:'Syne',sans-serif}
+
+    /* ── GIT STEPS ── */
+    .git-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0}
+    .git-step{
+      background:var(--paper);
+      border:1px solid var(--rule);
+      border-right:none;
+      padding:18px 16px;
+      position:relative;
+    }
+    .git-step:last-child{border-right:1px solid var(--rule);border-radius:0 var(--radius) var(--radius) 0}
+    .git-step:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+    .git-step .arrow{
+      position:absolute;
+      right:-13px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:20px;
+      color:var(--gold);
+      z-index:2;
+    }
+    .git-step .gs-num{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;color:var(--gold);letter-spacing:2px;
+      text-transform:uppercase;margin-bottom:6px;font-weight:600
+    }
+    .git-step h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:6px}
+    .git-step p{font-size:12.5px;color:#666;line-height:1.5}
+    .git-cmd{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;
+      background:var(--ink);
+      color:var(--code-str);
+      padding:2px 7px;
+      border-radius:3px;
+      display:inline-block;
+      margin-top:4px;
+    }
+
+    /* ── STUDENT TABLE ── */
+    .table-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow);margin:24px 0}
+    table.students{
+      width:100%;
+      border-collapse:collapse;
+      background:var(--paper);
+    }
+    table.students thead th{
+      background:var(--ink2);
+      color:#fff;
+      padding:12px 16px;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      text-align:left;
+      white-space:nowrap;
+      border-bottom:3px solid var(--gold);
+    }
+    table.students thead th:first-child{width:48px;text-align:center}
+    table.students tbody tr:nth-child(even){background:#fafaf8}
+    table.students tbody tr:hover{background:#f5f0e8}
+    table.students td{
+      padding:11px 16px;
+      border-bottom:1px solid var(--rule2);
+      font-size:14px;
+      vertical-align:middle;
+    }
+    table.students td:first-child{
+      text-align:center;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:12px;
+      font-weight:600;
+      color:var(--gold);
+    }
+    .student-name{font-weight:600;color:var(--ink);font-family:'Syne',sans-serif;font-size:13px}
+    .matrix-cell{font-family:'IBM Plex Mono',monospace;font-size:12px;white-space:nowrap}
+    .matrix-display{
+      display:inline-grid;
+      grid-template-columns:repeat(3,28px);
+      gap:0;
+      border-left:2px solid var(--ink2);
+      border-right:2px solid var(--ink2);
+      padding:2px 6px;
+      line-height:1.5;
+    }
+    .matrix-display span{text-align:right;padding:1px 3px;font-size:11px}
+    .tag-repo{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;
+      background:var(--teal-bg);
+      color:var(--teal);
+      border:1px solid var(--teal);
+      padding:2px 8px;
+      border-radius:3px;
+    }
+
+    /* ── CODE BLOCKS ── */
+    .lang-tabs{display:flex;gap:0;margin-bottom:0}
+    .lang-tab{
+      padding:8px 20px;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11.5px;
+      font-weight:600;
+      letter-spacing:.5px;
+      border:1px solid var(--rule);
+      border-bottom:none;
+      background:var(--page);
+      color:var(--ink2);
+      cursor:pointer;
+      border-radius:var(--radius) var(--radius) 0 0;
+      transition:background .15s;
+    }
+    .lang-tab.active{background:var(--code-bg);color:var(--gold-lt);border-color:var(--ink2)}
+    .lang-tab:not(.active):hover{background:var(--rule2)}
+    .code-container{
+      background:var(--code-bg);
+      border-radius:0 var(--radius) var(--radius) var(--radius);
+      border:1px solid var(--ink2);
+      overflow:hidden;
+      margin-bottom:32px;
+    }
+    .code-header{
+      background:#141e2a;
+      padding:10px 18px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .code-dots{display:flex;gap:6px}
+    .code-dots span{width:10px;height:10px;border-radius:50%;display:block}
+    .code-dots span:nth-child(1){background:#ff5f57}
+    .code-dots span:nth-child(2){background:#febc2e}
+    .code-dots span:nth-child(3){background:#28c840}
+    .code-filename{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;
+      color:rgba(255,255,255,.4);
+      margin-left:8px;
+    }
+    pre{
+      padding:24px;
+      overflow-x:auto;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:12.5px;
+      line-height:1.75;
+      color:var(--code-text);
+      tab-size:4;
+    }
+    .ck{color:var(--code-key)}         /* keyword */
+    .cs{color:var(--code-str)}         /* string / green */
+    .cc{color:var(--code-cmt);font-style:italic} /* comment */
+    .cn{color:var(--code-num)}         /* number */
+    .cf{color:var(--code-fn)}          /* function */
+    .cy{color:#ffd700}                 /* class name */
+
+    /* ── RUBRIC TABLE ── */
+    table.rubric{width:100%;border-collapse:collapse;background:var(--paper);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+    table.rubric thead th{
+      background:var(--ink2);color:#fff;
+      padding:12px 16px;
+      font-family:'IBM Plex Mono',monospace;font-size:11px;
+      font-weight:600;letter-spacing:1px;text-transform:uppercase;
+      text-align:left;border-bottom:3px solid var(--gold);
+    }
+    table.rubric tbody tr:nth-child(even){background:#fafaf8}
+    table.rubric tbody tr:hover{background:#f5f0e8}
+    table.rubric td{
+      padding:12px 16px;
+      border-bottom:1px solid var(--rule2);
+      font-size:14px;
+      vertical-align:top;
+    }
+    table.rubric td:first-child{font-weight:600;color:var(--ink);width:28%}
+    table.rubric td:last-child{
+      text-align:center;font-family:'IBM Plex Mono',monospace;
+      font-size:13px;font-weight:600;color:var(--gold);width:80px
+    }
+    .rubric-total td{
+      background:var(--ink2) !important;
+      color:#fff !important;
+      font-family:'Syne',sans-serif;
+      font-weight:700;
+      font-size:14px;
+    }
+    .rubric-total td:last-child{color:var(--gold-lt) !important;font-size:18px}
+
+    /* ── ANSWER KEY ── */
+    .ak-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:16px}
+    .ak-card{
+      background:var(--paper);
+      border:1px solid var(--rule);
+      border-left:3px solid var(--teal);
+      border-radius:0 var(--radius) var(--radius) 0;
+      padding:11px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:13px;
+    }
+    .ak-card .ak-name{color:var(--ink2);font-size:12.5px;font-weight:600}
+    .ak-card .ak-num{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10.5px;
+      color:var(--gold);
+      margin-bottom:2px;
+    }
+    .ak-det{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:17px;
+      font-weight:600;
+      color:var(--teal);
+      white-space:nowrap;
+    }
+    .ak-det.zero{color:var(--red)}
+    .ak-det.neg{color:var(--blue)}
+    .prof-note{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11.5px;
+      background:var(--teal-bg);
+      border:1px dashed var(--teal);
+      border-radius:var(--radius);
+      padding:14px 18px;
+      color:var(--ink2);
+      margin-bottom:20px;
+    }
+    .prof-note strong{color:var(--teal)}
+
+    /* ── FOOTER ── */
+    footer{
+      background:var(--ink2);
+      color:rgba(255,255,255,.5);
+      text-align:center;
+      padding:24px;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;
+      letter-spacing:.5px;
+      border-top:3px solid var(--gold);
+    }
+    footer strong{color:var(--gold-lt)}
+
+    /* ── UTILITIES ── */
+    .tag{
+      display:inline-block;font-family:'IBM Plex Mono',monospace;
+      font-size:10px;font-weight:600;letter-spacing:1.5px;
+      text-transform:uppercase;padding:2px 9px;
+      border-radius:3px;vertical-align:middle;margin-left:6px;
+    }
+    .tag.java{background:#fff3e0;color:#e65100;border:1px solid #e65100}
+    .tag.js{background:#fffde7;color:#b8860b;border:1px solid #b8860b}
+    .tag.git{background:#e8f5e9;color:#2e7d32;border:1px solid #2e7d32}
+    .tag.req{background:#e3f2fd;color:#1565c0;border:1px solid #1565c0}
+    .divider{border:none;border-top:2px dashed var(--rule);margin:40px 0}
+    kbd{
+      font-family:'IBM Plex Mono',monospace;font-size:11px;
+      background:#eee;border:1px solid #ccc;border-bottom:2px solid #aaa;
+      border-radius:3px;padding:1px 6px;color:var(--ink)
+    }
+    a{color:var(--teal);text-decoration:underline dotted}
+    a:hover{color:var(--teal-lt)}
+    @media print{nav.tabs{display:none}body{font-size:12px}}
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="school-line">University of Perpetual Help System DALTA — Molino Campus</div>
+      <h1>Programming Assignment<br><em>3×3 Matrix Determinant Solver</em></h1>
+      <div class="header-meta">
+        <span class="meta-chip gold">Programming 2</span>
+        <span class="meta-chip">BS Information Technology Students</span>
+        <span class="meta-chip">Java &amp; JavaScript</span>
+        <span class="meta-chip">A.Y. 2025–2026</span>
+      </div>
+    </div>
+    <div class="header-badge">
+      TOTAL POINTS
+      <div class="badge-box">
+        <span class="pts">100</span>
+        <span class="pts-label">Points</span>
+      </div>
+      <div style="margin-top:10px;font-size:10px">
+        Deadline: To be announced<br>
+        Submission via Git Repository
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     NAV
+══════════════════════════════════════════ -->
+<nav class="tabs">
+  <div class="tabs-inner">
+    <a href="#overview"     >§1 Overview</a>
+    <a href="#instructions" >§2 Instructions</a>
+    <a href="#git"          class="teal">§3 Git Requirements</a>
+    <a href="#assignments"  >§4 Student Assignments</a>
+    <a href="#templates"    >§5 Code Templates</a>
+    <a href="#rubric"       >§6 Grading Rubric</a>
+    <a href="#answerkey"    class="red">§7 Answer Key (Prof)</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════ -->
+<main>
+
+  <!-- ─── §1 OVERVIEW ─── -->
+  <div class="sec" id="overview">
+    <div class="sec-head">
+      <span class="sec-num">§ 01</span>
+      <div>
+        <div class="sec-title">Assignment <span>Overview</span></div>
+        <div class="sec-desc">What you are building and why it matters</div>
+      </div>
+    </div>
+
+    <p style="font-size:15.5px;max-width:820px;margin-bottom:20px">
+      As BSIT students, you will constantly encounter linear algebra as a foundational tool in graphics programming, machine learning, cryptography, and scientific computing. This assignment bridges the gap between mathematical theory and software engineering: you will implement a <strong>3×3 matrix determinant solver</strong> in two languages—<strong>Java</strong> and <strong>JavaScript</strong>—that outputs a complete, human-readable step-by-step solution.
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">🎯 Learning Objectives</div>
+      <ul>
+        <li>Translate the cofactor expansion formula for 3×3 determinants into working code</li>
+        <li>Practice producing readable console/browser output that mirrors textbook solution steps</li>
+        <li>Apply professional code documentation practices (header comments, inline comments)</li>
+        <li>Use Git for version-controlled source code submission</li>
+        <li>Demonstrate competency in both object-oriented (Java) and scripting (JavaScript) paradigms</li>
+      </ul>
+    </div>
+
+    <div class="req-grid">
+      <div class="req-card">
+        <div class="rnum">Deliverable 01</div>
+        <h4>DeterminantSolver.java</h4>
+        <p>A Java program that declares your assigned matrix, computes the determinant via cofactor expansion, and prints each step to the console.</p>
+      </div>
+      <div class="req-card">
+        <div class="rnum">Deliverable 02</div>
+        <h4>determinant_solver.js</h4>
+        <p>An equivalent JavaScript program (Node.js) that performs the same step-by-step computation and outputs results using <kbd>console.log</kbd>.</p>
+      </div>
+      <div class="req-card">
+        <div class="rnum">Deliverable 03</div>
+        <h4>README.md</h4>
+        <p>A markdown file in your repository documenting your name, the assigned matrix, how to run each program, and sample output.</p>
+      </div>
+      <div class="req-card">
+        <div class="rnum">Deliverable 04</div>
+        <h4>Git Repository Push</h4>
+        <p>All files committed and pushed to your designated GitHub repository under the folder <kbd>linear-algebra/assignment-01/</kbd>.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- ─── §2 INSTRUCTIONS ─── -->
+  <div class="sec" id="instructions">
+    <div class="sec-head">
+      <span class="sec-num">§ 02</span>
+      <div>
+        <div class="sec-title">General <span>Instructions</span></div>
+        <div class="sec-desc">Read every item carefully — non-compliance will affect your grade</div>
+      </div>
+    </div>
+
+    <div class="callout red">
+      <div class="callout-title">⚠ Academic Integrity</div>
+      <p>Each student has been assigned a <strong>unique matrix</strong>. Submitting a solution that uses another student's matrix, or submitting code that is identical to a classmate's without clear independent authorship, constitutes academic dishonesty and will receive a grade of zero.</p>
+    </div>
+
+    <h3 style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin:28px 0 16px">Program Requirements</h3>
+
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          <strong>Use your assigned matrix only.</strong> Find your name in Section 4 (Student Assignments). Hardcode your assigned 3×3 matrix values into your program. Do not prompt the user for matrix input — the matrix is fixed per student.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>Implement cofactor expansion along the first row.</strong> Your program must compute the determinant using the formula:<br>
+          <code style="font-family:'IBM Plex Mono',monospace;font-size:13px;background:#f0ede7;padding:6px 10px;border-radius:4px;display:block;margin:8px 0">det(M) = M[0][0]·(M[1][1]·M[2][2] − M[1][2]·M[2][1]) − M[0][1]·(M[1][0]·M[2][2] − M[1][2]·M[2][0]) + M[0][2]·(M[1][0]·M[2][1] − M[1][1]·M[2][0])</code>
+          Each cofactor (2×2 minor) must be printed as a separate, labelled step.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>Step-by-step output is mandatory.</strong> The output must clearly show: (a) the original matrix, (b) expansion along row 1, (c) each 2×2 minor calculation, (d) each cofactor term, (e) the final determinant value.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>Your codebase must include a student header comment block</strong> at the top of every source file. It must contain: your full name, student ID (if applicable), course code, assignment title, date, and a brief description of what the program does. See the code templates in Section 5 for the exact required format.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>Inline comments are required throughout.</strong> Every major section of code (matrix declaration, minor computation, expansion loop, output formatting) must be preceded by a comment explaining what the next block of code does. Comments must be written in your own words — do not copy template comments verbatim.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>Code structure for Java:</strong> Create a <em>public class</em> named <kbd>DeterminantSolver</kbd>. Use at minimum two methods: <kbd>computeMinor()</kbd> for the 2×2 determinant and <kbd>solveDeterminant()</kbd> for the full expansion with step printing. A <kbd>printMatrix()</kbd> helper is strongly recommended.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>Code structure for JavaScript:</strong> Write clean, modular functions. Use at minimum: <kbd>computeMinor()</kbd>, <kbd>solveDeterminant()</kbd>, and <kbd>printMatrix()</kbd>. You may use ES6+ syntax (arrow functions, template literals) but the code must run correctly in Node.js.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>Both programs must produce identical mathematical results.</strong> The numerical determinant value computed in Java must match that computed in JavaScript. A difference in output format is acceptable; a difference in the computed determinant value is not.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>Handle the zero-determinant case explicitly.</strong> If your program computes a determinant of zero, it must print an additional line stating: <em>"The matrix is SINGULAR — it has no inverse."</em>
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          <strong>No use of math libraries for determinant computation.</strong> You must implement the cofactor expansion yourself. Using <kbd>linalg.det()</kbd>, Apache Commons Math, or any equivalent is prohibited.
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout blue">
+      <div class="callout-title">📋 Expected Console Output Format</div>
+      <p>Your program output should look similar to this (values will differ per student):</p>
+      <pre style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:#0f1923;color:#e8dcc8;padding:14px 16px;border-radius:6px;margin-top:10px;overflow-x:auto">
+===================================================
+  3x3 MATRIX DETERMINANT SOLVER
+  Student: [YOUR FULL NAME]
+  Assigned Matrix:
+===================================================
+  |  2   1   3  |
+  |  4   5   2  |
+  |  1   3   4  |
+===================================================
+
+Expanding along Row 1 (cofactor expansion):
+
+  Step 1 — Minor M₁₁: det([5,2],[3,4]) = (5×4) - (2×3) = 20 - 6 = 14
+  Step 2 — Minor M₁₂: det([4,2],[1,4]) = (4×4) - (2×1) = 16 - 2 = 14
+  Step 3 — Minor M₁₃: det([4,5],[1,3]) = (4×3) - (5×1) = 12 - 5 = 7
+
+  Cofactor C₁₁ = (+1) × 2 × 14 =  28
+  Cofactor C₁₂ = (-1) × 1 × 14 = -14
+  Cofactor C₁₃ = (+1) × 3 ×  7 =  21
+
+  det(M) = 28 + (-14) + 21
+
+===================================================
+  ✓  DETERMINANT = 35
+===================================================</pre>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- ─── §3 GIT REQUIREMENTS ─── -->
+  <div class="sec" id="git">
+    <div class="sec-head">
+      <span class="sec-num tl">§ 03</span>
+      <div>
+        <div class="sec-title tl">Git Repository <span style="color:var(--teal)">Requirements</span></div>
+        <div class="sec-desc">Version control is a core professional skill — it is part of your grade</div>
+      </div>
+    </div>
+
+    <div class="callout teal">
+      <div class="callout-title">📁 Repository Naming Convention</div>
+      <p>Your GitHub repository must be named using the following format:<br>
+      <code style="font-family:'IBM Plex Mono',monospace;background:#0f1923;color:#6dbf8b;padding:4px 10px;border-radius:4px;display:inline-block;margin-top:6px">uphsd-cs-[lastname]-[firstname]</code><br>
+      <em>Example:</em> <code style="font-family:'IBM Plex Mono',monospace;background:#0f1923;color:#6dbf8b;padding:4px 10px;border-radius:4px;display:inline-block;margin-top:4px">uphsd-cs-alansalon-nathaniel</code></p>
+    </div>
+
+    <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin:24px 0 16px">Required Repository Structure</h3>
+
+    <div class="code-container" style="margin-bottom:24px">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-filename">Repository folder structure</span>
+      </div>
+      <pre>
+<span class="cs">uphsd-cs-[lastname]-[firstname]/</span>
+├── <span class="cf">linear-algebra/</span>
+│   └── <span class="cf">assignment-01/</span>
+│       ├── <span class="cy">DeterminantSolver.java</span>      <span class="cc">← Java solution</span>
+│       ├── <span class="cy">determinant_solver.js</span>       <span class="cc">← JavaScript solution</span>
+│       └── <span class="cy">README.md</span>                   <span class="cc">← Documentation</span>
+└── <span class="cy">README.md</span>                           <span class="cc">← Root repo README</span></pre>
+    </div>
+
+    <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin:24px 0 16px">Submission Workflow</h3>
+
+    <div class="git-flow" style="margin-bottom:24px">
+      <div class="git-step">
+        <div class="gs-num">Step 01</div>
+        <h4>Create Repository</h4>
+        <p>Create a public GitHub repository following the naming convention above.</p>
+        <div><span class="git-cmd">github.com/new</span></div>
+        <span class="arrow">›</span>
+      </div>
+      <div class="git-step">
+        <div class="gs-num">Step 02</div>
+        <h4>Clone Locally</h4>
+        <p>Clone the repo to your machine and create the required folder structure.</p>
+        <div><span class="git-cmd">git clone [url]</span></div>
+        <span class="arrow">›</span>
+      </div>
+      <div class="git-step">
+        <div class="gs-num">Step 03</div>
+        <h4>Write &amp; Test Code</h4>
+        <p>Write both programs, test them locally, verify the determinant value is correct.</p>
+        <div><span class="git-cmd">node determinant_solver.js</span></div>
+        <span class="arrow">›</span>
+      </div>
+      <div class="git-step">
+        <div class="gs-num">Step 04</div>
+        <h4>Commit with Message</h4>
+        <p>Stage all files and commit with a descriptive message that includes your name.</p>
+        <div><span class="git-cmd">git add .</span></div>
+        <div><span class="git-cmd">git commit -m "..."</span></div>
+        <span class="arrow">›</span>
+      </div>
+      <div class="git-step">
+        <div class="gs-num">Step 05</div>
+        <h4>Push &amp; Submit</h4>
+        <p>Push to GitHub and submit your repository URL via the class portal or to the professor directly.</p>
+        <div><span class="git-cmd">git push origin main</span></div>
+      </div>
+    </div>
+
+    <div class="callout teal">
+      <div class="callout-title">📝 Required README.md Content</div>
+      <ul>
+        <li>Student's full name and section</li>
+        <li>Course: Math 101 – Linear Algebra, UPHSD Molino Campus</li>
+        <li>Assignment title and number</li>
+        <li>The assigned 3×3 matrix displayed in a readable format</li>
+        <li>How to run the Java program (<kbd>javac</kbd> + <kbd>java</kbd> commands)</li>
+        <li>How to run the JavaScript program (<kbd>node</kbd> command)</li>
+        <li>Sample output from both programs</li>
+        <li>The final determinant value</li>
+      </ul>
+    </div>
+
+    <div class="callout red">
+      <div class="callout-title">🚫 Git Submission Rules</div>
+      <ul>
+        <li>Repositories must be <strong>public</strong> — private repos cannot be graded</li>
+        <li>Commit history will be reviewed — all work must show a progression of commits, not a single final dump</li>
+        <li>Required commit message format: <kbd>feat: [description] - [YourLastname]</kbd></li>
+        <li>Do not commit compiled <kbd>.class</kbd> files or <kbd>node_modules/</kbd></li>
+        <li>At least <strong>3 commits</strong> are required in your commit history</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- ─── §4 STUDENT ASSIGNMENTS ─── -->
+  <div class="sec" id="assignments">
+    <div class="sec-head">
+      <span class="sec-num">§ 04</span>
+      <div>
+        <div class="sec-title">Student <span>Assignments</span></div>
+        <div class="sec-desc">Each student has a unique 3×3 matrix — find your name and hardcode your matrix exactly as shown</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">🔍 How to Read Your Matrix</div>
+      <p>The matrix shown below is organized in row-major order: [R1C1, R1C2, R1C3 | R2C1, R2C2, R2C3 | R3C1, R3C2, R3C3]. In code, your matrix array should be declared as exactly these nine values arranged in a 3×3 grid.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="students">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Student Name</th>
+            <th>Assigned 3×3 Matrix M</th>
+            <th>Repository Name</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- helper macro for matrix display:
+               format: row1 | row2 | row3  each as "a b c" -->
+
+          <tr>
+            <td>01</td>
+            <td><span class="student-name">ALANSALON, NATHANIEL T.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>2</span><span>1</span><span>3</span><span>4</span><span>5</span><span>2</span><span>1</span><span>3</span><span>4</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-alansalon-nathaniel</span></td>
+          </tr>
+          <tr>
+            <td>02</td>
+            <td><span class="student-name">AMBUAN, JOHN ROWELLE A.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>3</span><span>1</span><span>2</span><span>2</span><span>4</span><span>1</span><span>5</span><span>2</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-ambuan-johnrowelle</span></td>
+          </tr>
+          <tr>
+            <td>03</td>
+            <td><span class="student-name">ARDIENTE, SOFHIA NICOLE I.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-ardiente-sofhia</span></td>
+          </tr>
+          <tr>
+            <td>04</td>
+            <td><span class="student-name">ARIZALA, GRAY ALLEN M.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>5</span><span>2</span><span>1</span><span>3</span><span>4</span><span>2</span><span>1</span><span>2</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-arizala-grayallen</span></td>
+          </tr>
+          <tr>
+            <td>05</td>
+            <td><span class="student-name">BAEL, ANDREI LAWRENCE D.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>2</span><span>0</span><span>1</span><span>3</span><span>5</span><span>2</span><span>1</span><span>4</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-bael-andreilawrence</span></td>
+          </tr>
+          <tr>
+            <td>06</td>
+            <td><span class="student-name">BAGAYAS, BOBSON ROB V.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>4</span><span>3</span><span>2</span><span>1</span><span>5</span><span>3</span><span>2</span><span>1</span><span>4</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-bagayas-bobsonrob</span></td>
+          </tr>
+          <tr>
+            <td>07</td>
+            <td><span class="student-name">BOSITO, KALIEL OSH A.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>6</span><span>1</span><span>2</span><span>3</span><span>4</span><span>1</span><span>2</span><span>5</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-bosito-kalielosh</span></td>
+          </tr>
+          <tr>
+            <td>08</td>
+            <td><span class="student-name">CABRERA, THEODORE KELLY G.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>2</span><span>3</span><span>1</span><span>5</span><span>1</span><span>4</span><span>3</span><span>2</span><span>6</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-cabrera-theodorekelly</span></td>
+          </tr>
+          <tr>
+            <td>09</td>
+            <td><span class="student-name">CANALITA, CHINO MA. SANTI F.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>1</span><span>4</span><span>2</span><span>3</span><span>2</span><span>5</span><span>6</span><span>1</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-canalita-chinoma</span></td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td><span class="student-name">CAÑETE, CLENT A.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>3</span><span>5</span><span>2</span><span>1</span><span>4</span><span>3</span><span>2</span><span>1</span><span>5</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-canete-clent</span></td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td><span class="student-name">CANTAROS, RICH ANDREI</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>4</span><span>2</span><span>5</span><span>1</span><span>3</span><span>2</span><span>6</span><span>4</span><span>1</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-cantaros-richandrei</span></td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td><span class="student-name">CASTILLO, YVES CHANDLER E.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>2</span><span>6</span><span>3</span><span>4</span><span>1</span><span>5</span><span>3</span><span>2</span><span>4</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-castillo-yveschandler</span></td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td><span class="student-name">CELADEZ, JED CEDRIC G.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>5</span><span>3</span><span>1</span><span>2</span><span>4</span><span>6</span><span>1</span><span>5</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-celadez-jedcedric</span></td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td><span class="student-name">DUPA, NEOMI ASHLEY SABIEN I.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>3</span><span>2</span><span>4</span><span>1</span><span>5</span><span>2</span><span>6</span><span>3</span><span>1</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-dupa-neomiashley</span></td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td><span class="student-name">GRIAR, BILL GEDRICK D.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>4</span><span>1</span><span>3</span><span>2</span><span>6</span><span>5</span><span>1</span><span>3</span><span>2</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-griar-billgedrick</span></td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td><span class="student-name">GUARDO, DON JOSHUA G.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>6</span><span>2</span><span>3</span><span>4</span><span>5</span><span>1</span><span>3</span><span>1</span><span>4</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-guardo-donjoshua</span></td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td><span class="student-name">GUINTO, JUAN ALPHONSE VALENTIN A.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>1</span><span>5</span><span>3</span><span>4</span><span>2</span><span>6</span><span>3</span><span>1</span><span>4</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-guinto-juanalphonse</span></td>
+          </tr>
+          <tr>
+            <td>18</td>
+            <td><span class="student-name">GUZMAN, FRANCESS PRICEAH S.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>7</span><span>2</span><span>1</span><span>3</span><span>5</span><span>4</span><span>2</span><span>1</span><span>6</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-guzman-francelspriceah</span></td>
+          </tr>
+          <tr>
+            <td>19</td>
+            <td><span class="student-name">HADAP, CHRISTIAN JORGE A.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>2</span><span>4</span><span>3</span><span>5</span><span>1</span><span>6</span><span>3</span><span>2</span><span>4</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-hadap-christianjorge</span></td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td><span class="student-name">HAMBRE, YHARA NICOLE Q.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>3</span><span>1</span><span>5</span><span>2</span><span>4</span><span>3</span><span>6</span><span>2</span><span>1</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-hambre-yharanicole</span></td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td><span class="student-name">JAVIER, JULIAN WILEY S.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>4</span><span>3</span><span>6</span><span>2</span><span>5</span><span>1</span><span>3</span><span>4</span><span>2</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-javier-julianwiley</span></td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td><span class="student-name">LACRO, ART LOUIE R.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>5</span><span>4</span><span>2</span><span>3</span><span>1</span><span>6</span><span>2</span><span>5</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-lacro-artlouie</span></td>
+          </tr>
+          <tr>
+            <td>23</td>
+            <td><span class="student-name">LANCETA, ALEXANDER D.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>1</span><span>3</span><span>5</span><span>2</span><span>4</span><span>6</span><span>3</span><span>5</span><span>7</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-lanceta-alexander</span></td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td><span class="student-name">LAXA, JUSTIN B.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>6</span><span>4</span><span>3</span><span>2</span><span>5</span><span>4</span><span>3</span><span>1</span><span>2</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-laxa-justin</span></td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td><span class="student-name">LUMABAN, RISHAMAY FE R.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>3</span><span>6</span><span>2</span><span>5</span><span>1</span><span>4</span><span>2</span><span>3</span><span>5</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-lumaban-rishamayfe</span></td>
+          </tr>
+          <tr>
+            <td>26</td>
+            <td><span class="student-name">MAGBANUA, CYRUS MATHEW C.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>2</span><span>5</span><span>4</span><span>3</span><span>1</span><span>6</span><span>4</span><span>2</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-magbanua-cyrusmathew</span></td>
+          </tr>
+          <tr>
+            <td>27</td>
+            <td><span class="student-name">MALANO, JAZAN KIERR J.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>1</span><span>2</span><span>4</span><span>3</span><span>5</span><span>6</span><span>2</span><span>4</span><span>8</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-malano-jazankierr</span></td>
+          </tr>
+          <tr>
+            <td>28</td>
+            <td><span class="student-name">MANAYSAY, CLIVE E.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>4</span><span>5</span><span>3</span><span>2</span><span>6</span><span>1</span><span>5</span><span>3</span><span>4</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-manaysay-clive</span></td>
+          </tr>
+          <tr>
+            <td>29</td>
+            <td><span class="student-name">PEÑALOSA, TRAVIS LLOYD B.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>5</span><span>1</span><span>4</span><span>3</span><span>6</span><span>2</span><span>4</span><span>2</span><span>5</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-penalosa-travislloyd</span></td>
+          </tr>
+          <tr>
+            <td>30</td>
+            <td><span class="student-name">PERMISON, GIAN CARLO J.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>2</span><span>3</span><span>5</span><span>4</span><span>1</span><span>6</span><span>5</span><span>2</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-permison-giancarlo</span></td>
+          </tr>
+          <tr>
+            <td>31</td>
+            <td><span class="student-name">QUIAMBAO, DUSTIN CLARK S.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>6</span><span>3</span><span>4</span><span>2</span><span>5</span><span>1</span><span>4</span><span>2</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-quiambao-dustinclark</span></td>
+          </tr>
+          <tr>
+            <td>32</td>
+            <td><span class="student-name">SANTILLAN, MARVIN REY M.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>5</span><span>2</span><span>6</span><span>3</span><span>4</span><span>1</span><span>2</span><span>3</span><span>5</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-santillan-marvinrey</span></td>
+          </tr>
+          <tr>
+            <td>33</td>
+            <td><span class="student-name">TINSAY, JOHN CLEO T.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>2</span><span>1</span><span>6</span><span>4</span><span>3</span><span>5</span><span>6</span><span>2</span><span>4</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-tinsay-johncleo</span></td>
+          </tr>
+          <tr>
+            <td>34</td>
+            <td><span class="student-name">URBINO, CARLOS MIGUEL M.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>3</span><span>5</span><span>4</span><span>6</span><span>2</span><span>1</span><span>4</span><span>3</span><span>5</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-urbino-carlosmiguel</span></td>
+          </tr>
+          <tr>
+            <td>35</td>
+            <td><span class="student-name">VALENCIA, MARICAR C.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>5</span><span>3</span><span>6</span><span>2</span><span>4</span><span>3</span><span>1</span><span>5</span><span>2</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-valencia-maricar</span></td>
+          </tr>
+          <tr>
+            <td>36</td>
+            <td><span class="student-name">VILLAFLORES, JOELLEN T.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>4</span><span>2</span><span>3</span><span>5</span><span>6</span><span>1</span><span>3</span><span>4</span><span>2</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-villaflores-joellen</span></td>
+          </tr>
+          <tr>
+            <td>37</td>
+            <td><span class="student-name">VILLENA, JOHN KENNETH M.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>1</span><span>4</span><span>6</span><span>3</span><span>5</span><span>2</span><span>4</span><span>1</span><span>3</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-villena-johnkenneth</span></td>
+          </tr>
+          <tr>
+            <td>38</td>
+            <td><span class="student-name">VOCAL, REIN ALEXANDER A.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>3</span><span>2</span><span>5</span><span>1</span><span>4</span><span>6</span><span>2</span><span>3</span><span>1</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-vocal-reinalexander</span></td>
+          </tr>
+          <tr>
+            <td>39</td>
+            <td><span class="student-name">ZAMORA, SEAN MATTHEW T.</span></td>
+            <td class="matrix-cell"><div class="matrix-display"><span>6</span><span>1</span><span>4</span><span>2</span><span>5</span><span>3</span><span>4</span><span>2</span><span>1</span></div></td>
+            <td><span class="tag-repo">uphsd-cs-zamora-seanmatthew</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- ─── §5 CODE TEMPLATES ─── -->
+  <div class="sec" id="templates">
+    <div class="sec-head">
+      <span class="sec-num">§ 05</span>
+      <div>
+        <div class="sec-title">Code <span>Templates</span></div>
+        <div class="sec-desc">Starter structure — you must replace [PLACEHOLDERS] with your actual values and expand the logic</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">📌 Important Note on Templates</div>
+      <p>The code below is a <strong>structural guide</strong>, not a complete solution. The method bodies contain pseudocode or partial logic. You are expected to complete all computation logic, implement the step-by-step printing, and write your own inline comments in your own words. Submitting the template as-is without completing it will not receive full marks.</p>
+    </div>
+
+    <!-- JAVA TEMPLATE -->
+    <h3 style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin:28px 0 12px">
+      Java Template <span class="tag java">Java</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;margin-left:10px;font-weight:400">DeterminantSolver.java</span>
+    </h3>
+
+    <div class="lang-tabs">
+      <div class="lang-tab active">DeterminantSolver.java</div>
+    </div>
+    <div class="code-container">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-filename">DeterminantSolver.java — Replace all [PLACEHOLDERS] before submission</span>
+      </div>
+      <pre>
+<span class="cc">/**
+ * =====================================================
+ * Student Name    : [YOUR FULL NAME HERE]
+ * Course          : Math 101 — Linear Algebra
+ * Assignment      : Programming Assignment 1 — 3x3 Matrix Determinant Solver
+ * School          : University of Perpetual Help System DALTA, Molino Campus
+ * Date            : [DATE COMPLETED]
+ * GitHub Repo     : https://github.com/[your-username]/uphsd-cs-[lastname]-[firstname]
+ *
+ * Description:
+ *   This program computes the determinant of a hardcoded 3x3 matrix assigned
+ *   to [YOUR NAME] for Math 101. The solution is computed using cofactor
+ *   expansion along the first row. Each intermediate step (2x2 minor,
+ *   cofactor term, running sum) is printed to the console in a readable format.
+ * =====================================================
+ */</span>
+<span class="ck">public class</span> <span class="cy">DeterminantSolver</span> {
+
+    <span class="cc">// ── SECTION 1: Matrix Declaration ───────────────────────────────────
+    // Declare the 3x3 matrix assigned to this student.
+    // Values are hardcoded as a 2D integer array in row-major order.
+    // Replace the values below with YOUR assigned matrix from the assignment sheet.</span>
+    <span class="ck">static int</span>[][] matrix = {
+        { <span class="cn">[R1C1]</span>, <span class="cn">[R1C2]</span>, <span class="cn">[R1C3]</span> },   <span class="cc">// Row 1 of assigned matrix</span>
+        { <span class="cn">[R2C1]</span>, <span class="cn">[R2C2]</span>, <span class="cn">[R2C3]</span> },   <span class="cc">// Row 2 of assigned matrix</span>
+        { <span class="cn">[R3C1]</span>, <span class="cn">[R3C2]</span>, <span class="cn">[R3C3]</span> }    <span class="cc">// Row 3 of assigned matrix</span>
+    };
+
+    <span class="cc">// ── SECTION 2: 2×2 Determinant Helper ───────────────────────────────
+    // Computes the determinant of a 2x2 matrix given its four elements.
+    // Formula: det = (a * d) - (b * c)
+    // This method is called three times during cofactor expansion,
+    // once for each of the three 2x2 minors of the first row.</span>
+    <span class="ck">static int</span> <span class="cf">computeMinor</span>(<span class="ck">int</span> a, <span class="ck">int</span> b, <span class="ck">int</span> c, <span class="ck">int</span> d) {
+        <span class="cc">// Apply the 2x2 determinant formula: ad - bc</span>
+        <span class="ck">return</span> (a * d) - (b * c);
+    }
+
+    <span class="cc">// ── SECTION 3: Matrix Printer ────────────────────────────────────────
+    // Prints the 3x3 matrix to the console in a formatted, readable layout.
+    // Used at the start of output to display the problem clearly.</span>
+    <span class="ck">static void</span> <span class="cf">printMatrix</span>(<span class="ck">int</span>[][] m) {
+        System.out.println(<span class="cs">"┌               ┐"</span>);
+        <span class="ck">for</span> (<span class="ck">int</span>[] row : m) {
+            System.out.printf(<span class="cs">"│  %2d  %2d  %2d  │%n"</span>, row[<span class="cn">0</span>], row[<span class="cn">1</span>], row[<span class="cn">2</span>]);
+        }
+        System.out.println(<span class="cs">"└               ┘"</span>);
+    }
+
+    <span class="cc">// ── SECTION 4: Step-by-Step Determinant Solver ──────────────────────
+    // Computes the determinant of a 3x3 matrix using cofactor expansion
+    // along the first row. Prints each step clearly:
+    //   (a) Label the step (Minor M₁₁, M₁₂, M₁₃)
+    //   (b) Show the 2x2 sub-matrix
+    //   (c) Show the arithmetic of the minor
+    //   (d) Compute and display each signed cofactor term
+    //   (e) Display the final sum and determinant value</span>
+    <span class="ck">static void</span> <span class="cf">solveDeterminant</span>(<span class="ck">int</span>[][] m) {
+
+        <span class="cc">// Print the header and the matrix</span>
+        System.out.println(<span class="cs">"=".repeat(52)</span>);
+        System.out.println(<span class="cs">"  3x3 MATRIX DETERMINANT SOLVER"</span>);
+        System.out.println(<span class="cs">"  Student: [YOUR FULL NAME]"</span>);
+        System.out.println(<span class="cs">"  Assigned Matrix:"</span>);
+        System.out.println(<span class="cs">"=".repeat(52)</span>);
+        <span class="cf">printMatrix</span>(m);
+        System.out.println(<span class="cs">"=".repeat(52)</span>);
+
+        <span class="cc">// ── Step 1: Compute minor M₁₁ ──
+        // Remove row 0 and column 0 to get the 2x2 minor.
+        // The remaining elements are m[1][1], m[1][2], m[2][1], m[2][2].</span>
+        <span class="ck">int</span> minor11 = <span class="cf">computeMinor</span>(m[<span class="cn">1</span>][<span class="cn">1</span>], m[<span class="cn">1</span>][<span class="cn">2</span>], m[<span class="cn">2</span>][<span class="cn">1</span>], m[<span class="cn">2</span>][<span class="cn">2</span>]);
+        System.out.printf(<span class="cs">"  Step 1 — Minor M₁₁: det([%d,%d],[%d,%d]) = (%d×%d)-(%d×%d) = %d%n"</span>,
+            m[<span class="cn">1</span>][<span class="cn">1</span>], m[<span class="cn">1</span>][<span class="cn">2</span>], m[<span class="cn">2</span>][<span class="cn">1</span>], m[<span class="cn">2</span>][<span class="cn">2</span>],
+            m[<span class="cn">1</span>][<span class="cn">1</span>], m[<span class="cn">2</span>][<span class="cn">2</span>], m[<span class="cn">1</span>][<span class="cn">2</span>], m[<span class="cn">2</span>][<span class="cn">1</span>], minor11);
+
+        <span class="cc">// ── Step 2: Compute minor M₁₂ ──
+        // Remove row 0 and column 1. Remaining: m[1][0], m[1][2], m[2][0], m[2][2].</span>
+        <span class="ck">int</span> minor12 = <span class="cf">computeMinor</span>(m[<span class="cn">1</span>][<span class="cn">0</span>], m[<span class="cn">1</span>][<span class="cn">2</span>], m[<span class="cn">2</span>][<span class="cn">0</span>], m[<span class="cn">2</span>][<span class="cn">2</span>]);
+        System.out.printf(<span class="cs">"  Step 2 — Minor M₁₂: det([%d,%d],[%d,%d]) = (%d×%d)-(%d×%d) = %d%n"</span>,
+            m[<span class="cn">1</span>][<span class="cn">0</span>], m[<span class="cn">1</span>][<span class="cn">2</span>], m[<span class="cn">2</span>][<span class="cn">0</span>], m[<span class="cn">2</span>][<span class="cn">2</span>],
+            m[<span class="cn">1</span>][<span class="cn">0</span>], m[<span class="cn">2</span>][<span class="cn">2</span>], m[<span class="cn">1</span>][<span class="cn">2</span>], m[<span class="cn">2</span>][<span class="cn">0</span>], minor12);
+
+        <span class="cc">// ── Step 3: Compute minor M₁₃ ──
+        // Remove row 0 and column 2. Remaining: m[1][0], m[1][1], m[2][0], m[2][1].</span>
+        <span class="ck">int</span> minor13 = <span class="cf">computeMinor</span>(m[<span class="cn">1</span>][<span class="cn">0</span>], m[<span class="cn">1</span>][<span class="cn">1</span>], m[<span class="cn">2</span>][<span class="cn">0</span>], m[<span class="cn">2</span>][<span class="cn">1</span>]);
+        System.out.printf(<span class="cs">"  Step 3 — Minor M₁₃: det([%d,%d],[%d,%d]) = (%d×%d)-(%d×%d) = %d%n"</span>,
+            m[<span class="cn">1</span>][<span class="cn">0</span>], m[<span class="cn">1</span>][<span class="cn">1</span>], m[<span class="cn">2</span>][<span class="cn">0</span>], m[<span class="cn">2</span>][<span class="cn">1</span>],
+            m[<span class="cn">1</span>][<span class="cn">0</span>], m[<span class="cn">2</span>][<span class="cn">1</span>], m[<span class="cn">1</span>][<span class="cn">1</span>], m[<span class="cn">2</span>][<span class="cn">0</span>], minor13);
+
+        <span class="cc">// ── Cofactor Terms ──
+        // Apply the alternating sign pattern: C₁₁ = +m[0][0]·minor11
+        //                                     C₁₂ = −m[0][1]·minor12
+        //                                     C₁₃ = +m[0][2]·minor13</span>
+        <span class="ck">int</span> c11 =  m[<span class="cn">0</span>][<span class="cn">0</span>] * minor11;
+        <span class="ck">int</span> c12 = -m[<span class="cn">0</span>][<span class="cn">1</span>] * minor12;
+        <span class="ck">int</span> c13 =  m[<span class="cn">0</span>][<span class="cn">2</span>] * minor13;
+
+        System.out.println();
+        System.out.printf(<span class="cs">"  Cofactor C₁₁ = (+1) × %d × %d = %d%n"</span>, m[<span class="cn">0</span>][<span class="cn">0</span>], minor11, c11);
+        System.out.printf(<span class="cs">"  Cofactor C₁₂ = (-1) × %d × %d = %d%n"</span>, m[<span class="cn">0</span>][<span class="cn">1</span>], minor12, c12);
+        System.out.printf(<span class="cs">"  Cofactor C₁₃ = (+1) × %d × %d = %d%n"</span>, m[<span class="cn">0</span>][<span class="cn">2</span>], minor13, c13);
+
+        <span class="cc">// ── Final Determinant ──
+        // Sum the three cofactor terms to get the determinant value.</span>
+        <span class="ck">int</span> det = c11 + c12 + c13;
+        System.out.printf(<span class="cs">"%n  det(M) = %d + (%d) + %d%n"</span>, c11, c12, c13);
+        System.out.println(<span class="cs">"=".repeat(52)</span>);
+        System.out.printf(<span class="cs">"  ✓  DETERMINANT = %d%n"</span>, det);
+
+        <span class="cc">// ── Singular Matrix Check ──
+        // A determinant of zero means the matrix is singular (non-invertible).</span>
+        <span class="ck">if</span> (det == <span class="cn">0</span>) {
+            System.out.println(<span class="cs">"  ⚠ The matrix is SINGULAR — it has no inverse."</span>);
+        }
+        System.out.println(<span class="cs">"=".repeat(52)</span>);
+    }
+
+    <span class="cc">// ── SECTION 5: Entry Point ───────────────────────────────────────────
+    // The main method is the program's entry point.
+    // It calls solveDeterminant() with the student's assigned matrix.</span>
+    <span class="ck">public static void</span> <span class="cf">main</span>(String[] args) {
+        <span class="cf">solveDeterminant</span>(matrix);
+    }
+
+}
+</pre>
+    </div>
+
+    <!-- JAVASCRIPT TEMPLATE -->
+    <h3 style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin:32px 0 12px">
+      JavaScript Template <span class="tag js">JavaScript</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;margin-left:10px;font-weight:400">determinant_solver.js</span>
+    </h3>
+
+    <div class="lang-tabs">
+      <div class="lang-tab active">determinant_solver.js</div>
+    </div>
+    <div class="code-container">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-filename">determinant_solver.js — Run with: node determinant_solver.js</span>
+      </div>
+      <pre>
+<span class="cc">/**
+ * =====================================================
+ * Student Name    : [YOUR FULL NAME HERE]
+ * Course          : Math 101 — Linear Algebra
+ * Assignment      : Programming Assignment 1 — 3x3 Matrix Determinant Solver
+ * School          : University of Perpetual Help System DALTA, Molino Campus
+ * Date            : [DATE COMPLETED]
+ * GitHub Repo     : https://github.com/[your-username]/uphsd-cs-[lastname]-[firstname]
+ * Runtime         : Node.js (run with: node determinant_solver.js)
+ *
+ * Description:
+ *   JavaScript equivalent of DeterminantSolver.java. This script computes
+ *   the determinant of the same hardcoded 3x3 matrix using cofactor expansion
+ *   along the first row. All intermediate steps are logged to the console
+ *   using console.log() for complete transparency of the solution process.
+ * =====================================================
+ */</span>
+
+<span class="cc">// ── SECTION 1: Matrix Declaration ───────────────────────────────────
+// The assigned 3x3 matrix is declared as a 2D JavaScript array.
+// Replace the values below with YOUR assigned matrix (same values as Java).
+// Outer array = rows, inner arrays = individual row values.</span>
+<span class="ck">const</span> matrix = [
+    [<span class="cn">[R1C1]</span>, <span class="cn">[R1C2]</span>, <span class="cn">[R1C3]</span>],   <span class="cc">// Row 1</span>
+    [<span class="cn">[R2C1]</span>, <span class="cn">[R2C2]</span>, <span class="cn">[R2C3]</span>],   <span class="cc">// Row 2</span>
+    [<span class="cn">[R3C1]</span>, <span class="cn">[R3C2]</span>, <span class="cn">[R3C3]</span>]    <span class="cc">// Row 3</span>
+];
+
+<span class="cc">// ── SECTION 2: Matrix Printer ────────────────────────────────────────
+// Accepts a 3x3 array and prints it in a formatted table-like style.
+// Uses template literals for clean string interpolation.</span>
+<span class="ck">function</span> <span class="cf">printMatrix</span>(m) {
+    console.log(<span class="cs">`┌               ┐`</span>);
+    m.<span class="cf">forEach</span>(row => {
+        <span class="ck">const</span> fmt = row.<span class="cf">map</span>(v => v.<span class="cf">toString</span>().<span class="cf">padStart</span>(<span class="cn">3</span>)).<span class="cf">join</span>(<span class="cs">"  "</span>);
+        console.log(<span class="cs">`│ ${fmt}  │`</span>);
+    });
+    console.log(<span class="cs">`└               ┘`</span>);
+}
+
+<span class="cc">// ── SECTION 3: 2×2 Determinant Helper ───────────────────────────────
+// Computes the determinant of a 2x2 matrix given four scalar values.
+// Called three times during the cofactor expansion step.
+// Parameters: a, b = first row; c, d = second row of the 2x2 sub-matrix.</span>
+<span class="ck">function</span> <span class="cf">computeMinor</span>(a, b, c, d) {
+    <span class="cc">// 2x2 determinant formula: ad - bc</span>
+    <span class="ck">return</span> (a * d) - (b * c);
+}
+
+<span class="cc">// ── SECTION 4: Step-by-Step Determinant Solver ──────────────────────
+// Main solving function. Accepts the 3x3 matrix and:
+//   1. Prints the matrix clearly
+//   2. Computes each 2x2 minor (M₁₁, M₁₂, M₁₃)
+//   3. Prints the computation of each minor with its arithmetic
+//   4. Computes and prints each signed cofactor term
+//   5. Sums the cofactors and prints the final determinant
+//   6. Checks for a singular matrix (det = 0)</span>
+<span class="ck">function</span> <span class="cf">solveDeterminant</span>(m) {
+    <span class="ck">const</span> line = <span class="cs">"="</span>.<span class="cf">repeat</span>(<span class="cn">52</span>);
+
+    <span class="cc">// Print problem header</span>
+    console.log(line);
+    console.log(<span class="cs">"  3x3 MATRIX DETERMINANT SOLVER"</span>);
+    console.log(<span class="cs">"  Student: [YOUR FULL NAME]"</span>);
+    console.log(<span class="cs">"  Assigned Matrix:"</span>);
+    console.log(line);
+    <span class="cf">printMatrix</span>(m);
+    console.log(line);
+    console.log();
+    console.log(<span class="cs">"Expanding along Row 1 (cofactor expansion):"</span>);
+    console.log();
+
+    <span class="cc">// ── Step 1: Minor M₁₁ ──
+    // Delete row 0 and column 0 → remaining elements: [1][1],[1][2],[2][1],[2][2]</span>
+    <span class="ck">const</span> minor11 = <span class="cf">computeMinor</span>(m[<span class="cn">1</span>][<span class="cn">1</span>], m[<span class="cn">1</span>][<span class="cn">2</span>], m[<span class="cn">2</span>][<span class="cn">1</span>], m[<span class="cn">2</span>][<span class="cn">2</span>]);
+    console.log(
+        <span class="cs">`  Step 1 — Minor M₁₁: det([${m[1][1]},${m[1][2]}],[${m[2][1]},${m[2][2]}])`</span> +
+        <span class="cs">` = (${m[1][1]}×${m[2][2]}) - (${m[1][2]}×${m[2][1]}) = ${minor11}`</span>
+    );
+
+    <span class="cc">// ── Step 2: Minor M₁₂ ──
+    // Delete row 0 and column 1 → remaining: [1][0],[1][2],[2][0],[2][2]</span>
+    <span class="ck">const</span> minor12 = <span class="cf">computeMinor</span>(m[<span class="cn">1</span>][<span class="cn">0</span>], m[<span class="cn">1</span>][<span class="cn">2</span>], m[<span class="cn">2</span>][<span class="cn">0</span>], m[<span class="cn">2</span>][<span class="cn">2</span>]);
+    console.log(
+        <span class="cs">`  Step 2 — Minor M₁₂: det([${m[1][0]},${m[1][2]}],[${m[2][0]},${m[2][2]}])`</span> +
+        <span class="cs">` = (${m[1][0]}×${m[2][2]}) - (${m[1][2]}×${m[2][0]}) = ${minor12}`</span>
+    );
+
+    <span class="cc">// ── Step 3: Minor M₁₃ ──
+    // Delete row 0 and column 2 → remaining: [1][0],[1][1],[2][0],[2][1]</span>
+    <span class="ck">const</span> minor13 = <span class="cf">computeMinor</span>(m[<span class="cn">1</span>][<span class="cn">0</span>], m[<span class="cn">1</span>][<span class="cn">1</span>], m[<span class="cn">2</span>][<span class="cn">0</span>], m[<span class="cn">2</span>][<span class="cn">1</span>]);
+    console.log(
+        <span class="cs">`  Step 3 — Minor M₁₃: det([${m[1][0]},${m[1][1]}],[${m[2][0]},${m[2][1]}])`</span> +
+        <span class="cs">` = (${m[1][0]}×${m[2][1]}) - (${m[1][1]}×${m[2][0]}) = ${minor13}`</span>
+    );
+
+    <span class="cc">// ── Cofactor Terms ──
+    // C₁₁ gets +sign, C₁₂ gets -sign, C₁₃ gets +sign (alternating sign rule)</span>
+    <span class="ck">const</span> c11 =  m[<span class="cn">0</span>][<span class="cn">0</span>] * minor11;
+    <span class="ck">const</span> c12 = -m[<span class="cn">0</span>][<span class="cn">1</span>] * minor12;
+    <span class="ck">const</span> c13 =  m[<span class="cn">0</span>][<span class="cn">2</span>] * minor13;
+
+    console.log();
+    console.log(<span class="cs">`  Cofactor C₁₁ = (+1) × ${m[0][0]} × ${minor11} = ${c11}`</span>);
+    console.log(<span class="cs">`  Cofactor C₁₂ = (-1) × ${m[0][1]} × ${minor12} = ${c12}`</span>);
+    console.log(<span class="cs">`  Cofactor C₁₃ = (+1) × ${m[0][2]} × ${minor13} = ${c13}`</span>);
+
+    <span class="cc">// ── Final Determinant ──
+    // Add all three cofactor terms together for the determinant</span>
+    <span class="ck">const</span> det = c11 + c12 + c13;
+    console.log();
+    console.log(<span class="cs">`  det(M) = ${c11} + (${c12}) + ${c13}`</span>);
+    console.log(line);
+    console.log(<span class="cs">`  ✓  DETERMINANT = ${det}`</span>);
+
+    <span class="cc">// ── Singular Matrix Check ──
+    // If det = 0, print a warning that the matrix cannot be inverted</span>
+    <span class="ck">if</span> (det === <span class="cn">0</span>) {
+        console.log(<span class="cs">"  ⚠ The matrix is SINGULAR — it has no inverse."</span>);
+    }
+    console.log(line);
+}
+
+<span class="cc">// ── SECTION 5: Program Entry Point ──────────────────────────────────
+// Call the main solver function with the student's assigned matrix.</span>
+<span class="cf">solveDeterminant</span>(matrix);
+</pre>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- ─── §6 GRADING RUBRIC ─── -->
+  <div class="sec" id="rubric">
+    <div class="sec-head">
+      <span class="sec-num bl">§ 06</span>
+      <div>
+        <div class="sec-title">Grading <span style="color:var(--blue)">Rubric</span></div>
+        <div class="sec-desc">100-point total — both Java and JavaScript components are required</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="rubric">
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th>Description</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Correct Determinant Value</td>
+            <td>Both Java and JavaScript programs produce the mathematically correct determinant for the assigned matrix. Values must match the professor's answer key exactly.</td>
+            <td>25</td>
+          </tr>
+          <tr>
+            <td>Step-by-Step Output</td>
+            <td>Output shows all three 2×2 minors computed individually (with arithmetic), all three cofactor terms with signs, and the final summation. Each step must be clearly labelled.</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>Code Documentation — Header Block</td>
+            <td>Both source files contain the required student header comment block with complete information: name, course, assignment, school, date, GitHub URL, and program description.</td>
+            <td>15</td>
+          </tr>
+          <tr>
+            <td>Inline Comments</td>
+            <td>All major code sections are commented in the student's own words. Comments explain the <em>purpose</em> of each block (not just what the syntax does). At least one comment per logical section.</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <td>Java Program Structure</td>
+            <td>Public class named <kbd>DeterminantSolver</kbd> with at least <kbd>computeMinor()</kbd>, <kbd>solveDeterminant()</kbd>, and <kbd>printMatrix()</kbd> methods. Clean, compilable Java code.</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <td>JavaScript Program Structure</td>
+            <td>Modular functions <kbd>computeMinor()</kbd>, <kbd>solveDeterminant()</kbd>, <kbd>printMatrix()</kbd>. Runs without error in Node.js. ES6+ syntax permitted.</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <td>Git Repository Requirements</td>
+            <td>Correct repository name, required folder structure, README.md with all required content, at least 3 commits with descriptive messages, public visibility.</td>
+            <td>7</td>
+          </tr>
+          <tr>
+            <td>Singular Matrix Handling</td>
+            <td>If the assigned matrix has det = 0, the program explicitly prints the "SINGULAR" message. Students with non-zero determinants must still have the conditional check present in code.</td>
+            <td>3</td>
+          </tr>
+          <tr class="rubric-total">
+            <td colspan="2">TOTAL</td>
+            <td>100</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout red" style="margin-top:20px">
+      <div class="callout-title">📉 Grade Deductions</div>
+      <ul>
+        <li><strong>−10 pts</strong> per day late (max 3 days; after that, assignment receives zero)</li>
+        <li><strong>−15 pts</strong> for using a math library to compute the determinant instead of implementing cofactor expansion</li>
+        <li><strong>−20 pts</strong> for using another student's assigned matrix</li>
+        <li><strong>−100 pts (Zero)</strong> for identical code submission (plagiarism) — both students affected</li>
+        <li><strong>−5 pts</strong> for a private repository (unreadable by professor)</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- ─── §7 ANSWER KEY ─── -->
+  <div class="sec" id="answerkey">
+    <div class="sec-head">
+      <span class="sec-num rd">§ 07</span>
+      <div>
+        <div class="sec-title" style="color:var(--red)">Answer Key <span style="color:var(--red)">— Professor Use Only</span></div>
+        <div class="sec-desc">Expected determinant values for all 39 student matrices — for grading reference</div>
+      </div>
+    </div>
+
+    <div class="prof-note">
+      <strong>⚠ PROFESSOR NOTE:</strong> This section displays the correct determinant for each student's assigned matrix. Three matrices are intentionally singular (det = 0) — students #03 (Ardiente), #23 (Lanceta), and #27 (Malano) — as a pedagogical exercise to demonstrate linear dependence. Verify student output against these values. Also check that students with det = 0 have included the required singular matrix warning message in their output.
+    </div>
+
+    <div class="ak-grid">
+
+      <div class="ak-card"><div><div class="ak-num">#01 · ALANSALON</div><div class="ak-name">M = [2,1,3|4,5,2|1,3,4]</div></div><div class="ak-det">35</div></div>
+      <div class="ak-card"><div><div class="ak-num">#02 · AMBUAN</div><div class="ak-name">M = [3,1,2|2,4,1|5,2,3]</div></div><div class="ak-det neg">−3</div></div>
+      <div class="ak-card" style="border-left-color:var(--red)"><div><div class="ak-num">#03 · ARDIENTE ⚠</div><div class="ak-name">M = [1,2,3|4,5,6|7,8,9]</div></div><div class="ak-det zero">0</div></div>
+      <div class="ak-card"><div><div class="ak-num">#04 · ARIZALA</div><div class="ak-name">M = [5,2,1|3,4,2|1,2,3]</div></div><div class="ak-det">28</div></div>
+      <div class="ak-card"><div><div class="ak-num">#05 · BAEL</div><div class="ak-name">M = [2,0,1|3,5,2|1,4,3]</div></div><div class="ak-det">21</div></div>
+      <div class="ak-card"><div><div class="ak-num">#06 · BAGAYAS</div><div class="ak-name">M = [4,3,2|1,5,3|2,1,4]</div></div><div class="ak-det">56</div></div>
+      <div class="ak-card"><div><div class="ak-num">#07 · BOSITO</div><div class="ak-name">M = [6,1,2|3,4,1|2,5,3]</div></div><div class="ak-det">49</div></div>
+      <div class="ak-card"><div><div class="ak-num">#08 · CABRERA</div><div class="ak-name">M = [2,3,1|5,1,4|3,2,6]</div></div><div class="ak-det neg">−51</div></div>
+      <div class="ak-card"><div><div class="ak-num">#09 · CANALITA</div><div class="ak-name">M = [1,4,2|3,2,5|6,1,3]</div></div><div class="ak-det">67</div></div>
+      <div class="ak-card"><div><div class="ak-num">#10 · CAÑETE</div><div class="ak-name">M = [3,5,2|1,4,3|2,1,5]</div></div><div class="ak-det">42</div></div>
+      <div class="ak-card"><div><div class="ak-num">#11 · CANTAROS</div><div class="ak-name">M = [4,2,5|1,3,2|6,4,1]</div></div><div class="ak-det neg">−68</div></div>
+      <div class="ak-card"><div><div class="ak-num">#12 · CASTILLO</div><div class="ak-name">M = [2,6,3|4,1,5|3,2,4]</div></div><div class="ak-det neg">−3</div></div>
+      <div class="ak-card"><div><div class="ak-num">#13 · CELADEZ</div><div class="ak-name">M = [5,3,1|2,4,6|1,5,3]</div></div><div class="ak-det neg">−84</div></div>
+      <div class="ak-card"><div><div class="ak-num">#14 · DUPA</div><div class="ak-name">M = [3,2,4|1,5,2|6,3,1]</div></div><div class="ak-det neg">−89</div></div>
+      <div class="ak-card"><div><div class="ak-num">#15 · GRIAR</div><div class="ak-name">M = [4,1,3|2,6,5|1,3,2]</div></div><div class="ak-det neg">−11</div></div>
+      <div class="ak-card"><div><div class="ak-num">#16 · GUARDO</div><div class="ak-name">M = [6,2,3|4,5,1|3,1,4]</div></div><div class="ak-det">55</div></div>
+      <div class="ak-card"><div><div class="ak-num">#17 · GUINTO</div><div class="ak-name">M = [1,5,3|4,2,6|3,1,4]</div></div><div class="ak-det">6</div></div>
+      <div class="ak-card"><div><div class="ak-num">#18 · GUZMAN</div><div class="ak-name">M = [7,2,1|3,5,4|2,1,6]</div></div><div class="ak-det">155</div></div>
+      <div class="ak-card"><div><div class="ak-num">#19 · HADAP</div><div class="ak-name">M = [2,4,3|5,1,6|3,2,4]</div></div><div class="ak-det neg">−3</div></div>
+      <div class="ak-card"><div><div class="ak-num">#20 · HAMBRE</div><div class="ak-name">M = [3,1,5|2,4,3|6,2,1]</div></div><div class="ak-det neg">−90</div></div>
+      <div class="ak-card"><div><div class="ak-num">#21 · JAVIER</div><div class="ak-name">M = [4,3,6|2,5,1|3,4,2]</div></div><div class="ak-det neg">−21</div></div>
+      <div class="ak-card"><div><div class="ak-num">#22 · LACRO</div><div class="ak-name">M = [5,4,2|3,1,6|2,5,3]</div></div><div class="ak-det neg">−97</div></div>
+      <div class="ak-card" style="border-left-color:var(--red)"><div><div class="ak-num">#23 · LANCETA ⚠</div><div class="ak-name">M = [1,3,5|2,4,6|3,5,7]</div></div><div class="ak-det zero">0</div></div>
+      <div class="ak-card"><div><div class="ak-num">#24 · LAXA</div><div class="ak-name">M = [6,4,3|2,5,4|3,1,2]</div></div><div class="ak-det">29</div></div>
+      <div class="ak-card"><div><div class="ak-num">#25 · LUMABAN</div><div class="ak-name">M = [3,6,2|5,1,4|2,3,5]</div></div><div class="ak-det neg">−97</div></div>
+      <div class="ak-card"><div><div class="ak-num">#26 · MAGBANUA</div><div class="ak-name">M = [2,5,4|3,1,6|4,2,3]</div></div><div class="ak-det">65</div></div>
+      <div class="ak-card" style="border-left-color:var(--red)"><div><div class="ak-num">#27 · MALANO ⚠</div><div class="ak-name">M = [1,2,4|3,5,6|2,4,8]</div></div><div class="ak-det zero">0</div></div>
+      <div class="ak-card"><div><div class="ak-num">#28 · MANAYSAY</div><div class="ak-name">M = [4,5,3|2,6,1|5,3,4]</div></div><div class="ak-det neg">−3</div></div>
+      <div class="ak-card"><div><div class="ak-num">#29 · PEÑALOSA</div><div class="ak-name">M = [5,1,4|3,6,2|4,2,5]</div></div><div class="ak-det">51</div></div>
+      <div class="ak-card"><div><div class="ak-num">#30 · PERMISON</div><div class="ak-name">M = [2,3,5|4,1,6|5,2,3]</div></div><div class="ak-det">51</div></div>
+      <div class="ak-card"><div><div class="ak-num">#31 · QUIAMBAO</div><div class="ak-name">M = [6,3,4|2,5,1|4,2,3]</div></div><div class="ak-det">8</div></div>
+      <div class="ak-card"><div><div class="ak-num">#32 · SANTILLAN</div><div class="ak-name">M = [5,2,6|3,4,1|2,3,5]</div></div><div class="ak-det">65</div></div>
+      <div class="ak-card"><div><div class="ak-num">#33 · TINSAY</div><div class="ak-name">M = [2,1,6|4,3,5|6,2,4]</div></div><div class="ak-det neg">−42</div></div>
+      <div class="ak-card"><div><div class="ak-num">#34 · URBINO</div><div class="ak-name">M = [3,5,4|6,2,1|4,3,5]</div></div><div class="ak-det neg">−69</div></div>
+      <div class="ak-card"><div><div class="ak-num">#35 · VALENCIA</div><div class="ak-name">M = [5,3,6|2,4,3|1,5,2]</div></div><div class="ak-det neg">−2</div></div>
+      <div class="ak-card"><div><div class="ak-num">#36 · VILLAFLORES</div><div class="ak-name">M = [4,2,3|5,6,1|3,4,2]</div></div><div class="ak-det">24</div></div>
+      <div class="ak-card"><div><div class="ak-num">#37 · VILLENA</div><div class="ak-name">M = [1,4,6|3,5,2|4,1,3]</div></div><div class="ak-det neg">−93</div></div>
+      <div class="ak-card"><div><div class="ak-num">#38 · VOCAL</div><div class="ak-name">M = [3,2,5|1,4,6|2,3,1]</div></div><div class="ak-det neg">−45</div></div>
+      <div class="ak-card"><div><div class="ak-num">#39 · ZAMORA</div><div class="ak-name">M = [6,1,4|2,5,3|4,2,1]</div></div><div class="ak-det neg">−60</div></div>
+
+    </div>
+
+    <div style="margin-top:20px;padding:16px;background:var(--gold-bg);border-radius:var(--radius);border:1px solid rgba(200,134,10,.3)">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink2)">
+        <strong style="color:var(--gold)">KEY LEGEND:</strong> &nbsp;
+        <span style="color:var(--teal);font-weight:600">Teal value</span> = positive determinant &nbsp;|&nbsp;
+        <span style="color:var(--blue);font-weight:600">Blue value</span> = negative determinant &nbsp;|&nbsp;
+        <span style="color:var(--red);font-weight:600">Red / Zero</span> = singular matrix (no inverse) &nbsp;|&nbsp;
+        <span style="color:var(--red)">⚠ icon</span> = singular matrix assignment (students must print warning)
+      </p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer>
+  <strong>University of Perpetual Help System DALTA — Molino Campus</strong><br>
+  Math 101 · Linear Algebra · Programming Assignment 1 · BSITGD· A.Y. 2025–2026<br>
+  Java &amp; JavaScript · 3×3 Matrix Determinant Solver · 39 Students · Individual Unique Matrices
+</footer>
+
+</body>
+</html>

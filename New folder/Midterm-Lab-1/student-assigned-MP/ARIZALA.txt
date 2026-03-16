@@ -1,0 +1,9 @@
+📈 Monthly Performance Analyzer
+Scenario:
+Management wants monthly trend performance.
+
+Requirements:
+Group dataset by month
+Compute total sales per month
+Display sorted monthly summary (ascending order by month)
+Identify best-performing month

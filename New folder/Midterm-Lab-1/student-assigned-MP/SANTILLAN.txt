@@ -1,0 +1,14 @@
+Product Category Profitability Analysis
+Scenario:
+Company wants to know which category is most profitable.
+
+Requirements:
+Group by product category
+
+Compute:
+Total sales per category
+Average sale per category
+
+Identify:
+Most profitable category
+Least profitable category

@@ -1,0 +1,13 @@
+Mini Data Analytics Console Dashboard
+Scenario:
+Simulate real-world analytics tool.
+
+Requirements:
+
+Create a simple menu system:
+
+1 - View Dataset Summary
+2 - Monthly Sales
+3 - Top Customers
+4 - Category Analysis
+5 - Exit

@@ -1,0 +1,10 @@
+Detect Low Performing Products
+Scenario:
+Inventory team wants to phase out underperforming products.
+
+Requirements:
+Compute total sales per product
+
+Identify products with:
+Sales below dataset average
+Display flagged products
